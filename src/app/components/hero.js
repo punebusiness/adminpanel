@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react';
-import Link from 'next/link'
+import Link from 'next/link';
+
 const HeroSection = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -9,17 +10,29 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative">
-      {/* Hero Section */}
-      <div className="h-64 bg-blue-500 flex items-center justify-center text-white relative">
+    <div className="relative overflow-hidden h-screen">
+      {/* Hero Section with Curved Bottom */}
+      <div className="h-2/3 flex flex-column items-center justify-center relative animate__animated animate__fadeInLeft">
         <h1 className="text-4xl font-bold animate__animated animate__fadeIn">
           Empowering Education, Enriching Lives!
         </h1>
+        <p className="mt-3 h3">Grow With Us!</p>
       </div>
+      <svg
+        className="absolute bottom-0 left-0 w-full"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1440 320"
+      >
+        <path
+          fill="#3498db"
+          fillOpacity="1"
+          d="M0,192L48,186.7C96,181,192,171,288,186.7C384,203,480,245,576,229.3C672,213,768,139,864,128C960,117,1056,171,1152,197.3C1248,224,1344,224,1392,224L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        ></path>
+      </svg>
 
       {/* Sidebar Button */}
       <div
-        className="absolute top-4 right-4 cursor-pointer text-white"
+        className="absolute top-4 right-4 cursor-pointer"
         onClick={toggleSidebar}
       >
         <svg
