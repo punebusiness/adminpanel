@@ -1,8 +1,11 @@
 import sqlite3 from 'sqlite3';
+import path from "path"
 import { comparePassword, hashPassword } from './secure.js';
 import jwt from 'jsonwebtoken';
 function cdb(){
-  let db = new sqlite3.Database('a.db');
+  let pth = path.resolve(process.cwd(),'a.sqlite')
+  console.log(pth);
+  let db = new sqlite3.Database(pth);
   return db;
 }
 function createAdmin(name, email, phone, password, joining_date) {
