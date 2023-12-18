@@ -83,17 +83,17 @@ const HeroSection = () => {
         </div>
         <ul>
           <li className="mt-2">
-            <Link href="/admin-login" className="text-blue-300 hover:text-blue-400">
+            <Link href="/admin/login" className="text-blue-300 hover:text-blue-400">
               Admin Login
             </Link>
           </li>
           <li className="mt-2">
-            <Link href="/institute-login" className="text-blue-300 hover:text-blue-400">
+            <Link href="/institute/login" className="text-blue-300 hover:text-blue-400">
               Institute Login
             </Link>
           </li>
           <li className="mt-2">
-            <Link href="/student-login" className="text-blue-300 hover:text-blue-400">
+            <Link href="/student/login" className="text-blue-300 hover:text-blue-400">
               Student Login
             </Link>
           </li>

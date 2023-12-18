@@ -15,7 +15,8 @@ const LoginPage = ({page}) => {
         />
 
         {/* Login Form */}
-        <form className="w-full max-w-sm">
+        <form className="w-full max-w-sm" method="post" action="/api/login">
+        <input type="text" defaultValue={page} name="type" style={{display:"none"}} />
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -26,7 +27,7 @@ const LoginPage = ({page}) => {
             <input
               type="email"
               id="email"
-              name="email"
+              name={page+"email"}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Enter your email"
             />
@@ -41,7 +42,7 @@ const LoginPage = ({page}) => {
             <input
               type="password"
               id="password"
-              name="password"
+              name={page+"password"}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Enter your password"
             />
@@ -83,7 +84,8 @@ const LoginPage = ({page}) => {
         />
 
         {/* Login Form */}
-        <form className="w-full max-w-sm">
+        <form className="w-full max-w-sm" method="post" action="/api/login">
+          <input type="text" defaultValue={page} name="type" style={{display:"none"}} />
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -94,7 +96,7 @@ const LoginPage = ({page}) => {
             <input
               type="email"
               id="email"
-              name="email"
+              name={page+"email"}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Enter your email"
             />
@@ -109,7 +111,7 @@ const LoginPage = ({page}) => {
             <input
               type="password"
               id="password"
-              name="password"
+              name={page+"password"}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Enter your password"
             />
