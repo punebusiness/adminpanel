@@ -12,7 +12,8 @@ export async function POST(req,res){
             let mail = data.get(type+"email")
         let pwd = data.get(type+"password")
         let tkn = await adminLogin(mail,pwd)
-        let rurl = new URL("/admin/dashboard",new URL(req.url))
+        let rurl = new URL("/admin/dashboard",new URL(req.url).href)
+        // console.log(rurl);
         let resp = NextResponse.redirect(rurl,{status:301});
         resp.cookies.set("jwt",tkn,{
             httpOnly:true,
