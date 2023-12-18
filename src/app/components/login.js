@@ -1,5 +1,5 @@
 import React from 'react';
-import 'animate.css/animate.min.css';
+import 'animate.css';
 
 const LoginPage = ({page}) => {
   return (
