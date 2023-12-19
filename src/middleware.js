@@ -1,10 +1,6 @@
 import {NextResponse} from 'next/server'
 export async function middleware(req){
-    if(process.env.PROD){
-        req.nextUrl.href=req.nextUrl.href.replace(/:\d+/,'')
-        req.nextUrl.origin=req.nextUrl.origin.replace(/:\d+/,'')
-    }
-    let rurl = new URL("/admin/login",new URL(req.url).href)
+    let rurl = new URL("/admin/login",process.env.PROD?new URL(req.url).href.replace(/:\d+/,''):new URL(req.url).href);
     if(req.nextUrl.pathname=="/admin/dashboard"){
         try{
             let tkn = req.cookies.get("jwt")
@@ -12,7 +8,8 @@ export async function middleware(req){
             if(!tkn){
                 return NextResponse.redirect(rurl,{status:301})
             }
-            let f =await fetch(req.nextUrl.origin+"/api/verify",{
+            let furl = process.env.PROD?`${req.nextUrl.origin.replace(/:\d+/,'')}+/api/verify`:`${req.nextUrl.origin}+/api/verify`;
+            let f =await fetch(furl,{
                 method:"POST",
                 body:JSON.stringify({
                     token:tkn.value
