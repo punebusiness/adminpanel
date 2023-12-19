@@ -11,3 +11,14 @@ h1{
 h2{
   @apply text-xl;
 }
+#addadminform>input{
+color:black !important;
+}
+
+label{
+  color: white !important;
+}
+
+input{
+  color:black !important;
+}

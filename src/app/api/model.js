@@ -4,9 +4,54 @@ import { comparePassword, hashPassword } from './secure.js';
 import jwt from 'jsonwebtoken';
 function cdb(){
   let pth = path.resolve(process.cwd(),'a.sqlite')
-  console.log(pth);
+  // console.log(pth);
   let db = new sqlite3.Database(pth);
   return db;
+}
+
+function updateUser(name,email,phone,id){
+  return new Promise((resolve,reject)=>{
+    let db = cdb()
+    db.serialize(()=>{
+      db.get("SELECT * FROM admin WHERE id=? ",[id],(err,row)=>{
+        if(err){
+          reject("No user found")
+          db.close()
+        }else{
+          db.run(
+            "UPDATE admin SET name=?, email=?, phone=? WHERE id=?",
+            [name,email,phone,id],
+            (err)=>{
+              if(err){
+                reject(err.message)
+                db.close()
+              }else{
+                resolve("Admin Update Succesfully")
+                db.close()
+              }
+            }
+          )
+        }
+      })
+    })
+  })
+}
+
+function getuser(email){
+  return new Promise((resolve,reject)=>{
+    let db = cdb()
+  db.serialize(()=>{
+    db.get("SELECT * FROM admin WHERE email = ?",[email],(err,row)=>{
+      if(err){
+        reject(err.message)
+        db.close()
+      }else{
+        resolve(row)
+        db.close()
+      }
+    })
+  })
+  })
 }
 function createAdmin(name, email, phone, password, joining_date) {
   let db = cdb()
@@ -77,6 +122,7 @@ function adminLogin(email, password) {
             comparePassword(password, row.password)
               .then(() => {
                 const tokenData = {
+                  id:row.id,
                   name: row.name,
                   email: row.email,
                   joining_date: row.joining_date,
@@ -116,7 +162,7 @@ function adminLogin(email, password) {
 //     new Date()
 // ).then(dt=>console.log(dt))
 
-export { createAdmin, adminLogin };
+export { createAdmin, adminLogin, getuser,updateUser };
 
 // db.run(`
 //     CREATE TABLE IF NOT EXISTS admin (

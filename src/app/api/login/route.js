@@ -5,6 +5,10 @@ export function GET(req,res){
 }
 
 export async function POST(req,res){
+    if(process.env.PROD){
+        req.url.href=req.url.href.replace(/:\d+/,'')
+        req.url.origin=req.url.origin.replace(/:\d+/,'')
+    }
     let data = await req.formData();
     let type = data.get("type")
     if(type=="Admin"){
@@ -12,7 +16,8 @@ export async function POST(req,res){
             let mail = data.get(type+"email")
         let pwd = data.get(type+"password")
         let tkn = await adminLogin(mail,pwd)
-        let rurl = new URL("/admin/dashboard",new URL(req.url).href.replace(/:\d+/,''))
+        let rurl = new URL("/admin/dashboard",new URL(req.url).href)
+        // .replace(/:\d+/,'')
         // console.log(rurl);
         let resp = NextResponse.redirect(rurl,{status:301});
         resp.cookies.set("jwt",tkn,{

@@ -1,4 +1,7 @@
 "use client"
+import ProfileSection from "./profilecard"
+import AddAdminForm from "./addadmin"
+import UpdateUserForm from "./update"
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -22,13 +25,15 @@ const UserProfilePage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'addNewAdmin':
-        return <div>Add New Admin Form Goes Here</div>;
+        return <div><AddAdminForm/></div>;
       case 'changePassword':
         return <div>Change Password Form Goes Here</div>;
       case 'allAdmins':
         return <div>All Admins List Goes Here</div>;
+      case 'editProfile':
+        return <div><UpdateUserForm/></div>;
       default:
-        return <div>Edit Profile Form Goes Here</div>;
+        return <div><ProfileSection/></div>
     }
   };
 
@@ -51,7 +56,7 @@ const UserProfilePage = () => {
         ))}
       </div>
 
-      <div className="bg-white p-6 shadow-md rounded-md">
+      <div className="bg-slate-700 p-6 shadow-md rounded-md">
         {renderTabContent()}
       </div>
     </div>
