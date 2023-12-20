@@ -1,14 +1,6 @@
-import sqlite3 from 'sqlite3';
-import path from "path"
 import { comparePassword, hashPassword } from './secure.js';
 import jwt from 'jsonwebtoken';
-function cdb(){
-  let pth = path.resolve(process.cwd(),'a.sqlite')
-  // console.log(pth);
-  let db = new sqlite3.Database(pth);
-  return db;
-}
-
+import cdb from "./conn"
 function updateUser(name,email,phone,id){
   return new Promise((resolve,reject)=>{
     let db = cdb()

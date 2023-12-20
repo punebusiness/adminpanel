@@ -2,13 +2,14 @@ import {NextResponse} from 'next/server'
 export async function middleware(req){
     let rurl = new URL("/admin/login",process.env.PROD?new URL(req.url).href.replace(/:\d+/,''):new URL(req.url).href);
     if(req.nextUrl.pathname=="/admin/dashboard"){
+        console.log("admin dashboard");
         try{
             let tkn = req.cookies.get("jwt")
             // console.log(tkn);
             if(!tkn){
                 return NextResponse.redirect(rurl,{status:301})
             }
-            let furl = process.env.PROD?`${req.nextUrl.origin.replace(/:\d+/,'')}+/api/verify`:`${req.nextUrl.origin}+/api/verify`;
+            let furl = process.env.PROD?`${req.nextUrl.origin.replace(/:\d+/,'')}/api/verify`:`${req.nextUrl.origin}/api/verify`;
             let f =await fetch(furl,{
                 method:"POST",
                 body:JSON.stringify({
@@ -23,7 +24,8 @@ export async function middleware(req){
                 return NextResponse.redirect(rurl,{status:301})
             }
         }catch(err){
-            // ghff
+            console.log(err);
+            return NextResponse.redirect(rurl,{status:301})
         }
     }
     else if(req.nextUrl.pathname=="/logout"){

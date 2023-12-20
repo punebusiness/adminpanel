@@ -1,6 +1,7 @@
 "use client"
 import {useEffect} from "react"
 import SideNavigation from "../components/sidenav"
+export const dynamic="force-dynamic";
 export default function Admindash(){
 
     useEffect(() => {

@@ -9,6 +9,7 @@ export async function GET(req){
         let usr = await getuser(vfy.email)
         return NextResponse.json({success:true,name:usr.name,email:usr.email,phone:usr.phone,joining_date:usr.joining_date},{status:200})
     }catch(err){
+        console.log(err.message);
         return NextResponse.json({error:true,message:err.message},{status:501})
     }
 }

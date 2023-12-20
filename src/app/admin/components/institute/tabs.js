@@ -7,11 +7,12 @@ import {
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 
+import Add from "./add"
 const InstituteTabs = () => {
   const [activeTab, setActiveTab] = useState('addInstitute');
 
   const tabs = [
-    { id: 'addInstitute', label: 'Add Institute', icon: faPlus, content: 'Add Institute Form Goes Here' },
+    { id: 'addInstitute', label: 'Add Institute', icon: faPlus, content: <Add/> },
     { id: 'updateInstitute', label: 'Update Institute', icon: faEdit, content: 'Update Institute Form Goes Here' },
     { id: 'deleteInstitute', label: 'Delete Institute', icon: faTrash, content: 'Delete Institute Form Goes Here' },
   ];
