@@ -31,7 +31,6 @@ export default function Add() {
   const [errors, setErrors] = useState(deferr);
   function validCp(){
     const { path, createError } = this;
-    console.log(this);
     return this.test("validCp","Password Must Match!",(value)=>{
       if(value===formData.password){
         return true
@@ -67,8 +66,12 @@ export default function Add() {
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
-    setFormData({ ...formData, logo: file });
+    let fr = new FileReader()
     validateField('logo', file);
+    fr.onload=()=>{
+      setFormData({ ...formData, logo: file,b64:fr.result});
+    }
+    fr.readAsDataURL(file)
   };
 
   const validateField = async (name, value) => {
@@ -85,9 +88,10 @@ export default function Add() {
     sbtn.current.disabled = true;
     try {
       await schema.validate(formData, { abortEarly: false });
-      const { confirmPassword, ...dataWithoutConfirmPassword } = formData;
+      delete formData.confirmPassword;
+      delete formData.logo;
+      const dataWithoutConfirmPassword = formData;
       dataWithoutConfirmPassword.created_at = new Date();
-
       const response = await fetch("/api/institute", {
         method: "PUT",
         body: JSON.stringify(dataWithoutConfirmPassword),

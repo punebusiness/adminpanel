@@ -6,6 +6,8 @@ export async function PUT(req){
         let data = await req.json()
         let hash = await hashPassword(data.password)
         data.password = hash;
+        data.logo = data.b64;
+        delete data.b64;
         let add = await addInstitute(data)
         return NextResponse.json({success:true,message:add},{status:200})
     }catch(err){
