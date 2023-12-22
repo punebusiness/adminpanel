@@ -21,6 +21,7 @@ export async function middleware(req){
             })
             let dt = await f.json()
             if(dt.error){
+                console.log(dt);
                 return NextResponse.redirect(rurl,{status:301})
             }
         }catch(err){

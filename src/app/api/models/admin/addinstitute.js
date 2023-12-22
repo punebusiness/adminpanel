@@ -33,6 +33,7 @@ return new Promise((resolve,reject)=>{
             }else{
                 resolve("Institute Saved succesfully!")
             }
+            db.close()
         }
     )
 })

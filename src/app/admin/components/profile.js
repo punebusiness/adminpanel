@@ -2,7 +2,9 @@
 import ProfileSection from "./profilecard"
 import AddAdminForm from "./addadmin"
 import UpdateUserForm from "./update"
+import AdminList from "./adminlist"
 import React, { useState } from 'react';
+import {UpdatePassword} from "./updatepass"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser,
@@ -27,9 +29,9 @@ const UserProfilePage = () => {
       case 'addNewAdmin':
         return <div><AddAdminForm/></div>;
       case 'changePassword':
-        return <div>Change Password Form Goes Here</div>;
+        return <div><UpdatePassword/></div>;
       case 'allAdmins':
-        return <div>All Admins List Goes Here</div>;
+        return <div><AdminList/></div>;
       case 'editProfile':
         return <div><UpdateUserForm/></div>;
       default:

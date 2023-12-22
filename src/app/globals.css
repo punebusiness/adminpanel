@@ -22,3 +22,7 @@ label{
 input{
   color:black !important;
 }
+
+.btn-primary{
+  background-color: blueviolet;
+}
