@@ -52,7 +52,7 @@ const SideNavigation = () => {
         {/* Icons with Names */}
         {menuItems.map((item, index) => (
           item.link?
-          <a href="/logout" key={index}>
+          <a href="/api/logout" key={index}>
           <div
           className={`p-4 hover:bg-gray-700 transition-all cursor-pointer ${active===index?'bg-gray-500':''}`}
           onClick = {()=>{

@@ -1,13 +1,15 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState ,useRef} from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 const UpdateUserForm = () => {
-  const [formData, setFormData] = useState({
+  const sbtn = useRef();
+  let defdata = {
     name: '',
     email: '',
     phone: '',
-  });
+  }
+  const [formData, setFormData] = useState(defdata);
 
   const [errors, setErrors] = useState({});
 
@@ -21,7 +23,7 @@ const UpdateUserForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+sbtn.current.disabled=true;
     // Simple validation
     const newErrors = {};
     if (!formData.name.trim()) {
@@ -51,15 +53,20 @@ const UpdateUserForm = () => {
             if(dt.error){
                 toast.error(dt.message)
             }else{
+              setFormData(defdata)
                 toast.success("Admin Updated Succesfully!")
             }
+            sbtn.current.disabled=false;
       }).catch(err=>{
         toast.error(err.message)
+        sbtn.current.disabled=false;
+
       })
     }
   };
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="max-w-md mx-auto">
       <div className="mb-4">
         <label htmlFor="name" className="block text-sm font-semibold text-gray-600">
@@ -114,11 +121,13 @@ const UpdateUserForm = () => {
 
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none"
+        className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none" ref={sbtn}
       >
         Update Profile
       </button>
     </form>
+  <ToastContainer/>
+  </>
   );
 };
 

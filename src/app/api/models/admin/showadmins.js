@@ -1,5 +1,5 @@
 import cdb from "../../conn";
-
+import {comparePassword,hashPassword} from "../../secure"
 export default function showAdmins(id) {
   return new Promise((resolve, reject) => {
     let db = cdb();
@@ -56,29 +56,37 @@ export function changePassword(prevPass, newPass, id) {
   return new Promise((resolve, reject) => {
     let db = cdb();
     db.serialize(() => {
-      const checkPasswordQuery = `SELECT id FROM admin WHERE id = ? AND password = ?`;
-      db.get(checkPasswordQuery, [id, prevPass], (err, row) => {
+      const checkPasswordQuery = `SELECT * FROM admin WHERE id = ?`;
+      db.get(checkPasswordQuery, [id], (err, row) => {
         if (err) {
           reject(err.message);
+          db.close()
         } else if (!row) {
-          reject("Incorrect previous password");
+          reject("User not Found");
+          db.close()
         } else {
-          const updatePasswordQuery = `UPDATE admin SET password = ? WHERE id = ?`;
-          db.run(updatePasswordQuery, [newPass, id], function (err) {
-            if (err) {
-              reject(err.message);
-            } else {
-              if (this.changes > 0) {
-                resolve("Password updated successfully");
-              } else {
-                reject("No matching user found");
-              }
-            }
-          });
+          comparePassword(prevPass,row.password).then(x=>{
+              hashPassword(newPass).then(hash=>{
+              let query = `UPDATE admin SET password = '${hash}' WHERE id=${id}`;
+                db.run(query,(err)=>{
+                  if(err){
+                    reject("Something went wrong!:73")
+                  }else{
+                    resolve("Password Changed Succesfully!")
+                  }
+                  db.close()
+                })
+              }).catch(err=>{
+                reject(err.message)
+                db.close()
+              })
+          }).catch(err=>{
+            db.close()
+            reject(err.message)
+          })
+          
         }
       });
     });
-
-    db.close();
   });
 }

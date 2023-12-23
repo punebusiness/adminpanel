@@ -28,7 +28,7 @@ export async function GET(req){
 export async function PUT(req){
     try{
         let tkn = await req.cookies.get("jwt")
-        let vfy = verify(tkn)
+        let vfy = verify(tkn.value,process.env.SECRET);
         let id = vfy.id;
         let jsn = await req.json()
         let cp = await changePassword(jsn.prevPass,jsn.newPass,id)

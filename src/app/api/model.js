@@ -29,11 +29,11 @@ function updateUser(name,email,phone,id){
   })
 }
 
-function getuser(email){
+function getuser(id){
   return new Promise((resolve,reject)=>{
     let db = cdb()
   db.serialize(()=>{
-    db.get("SELECT * FROM admin WHERE email = ?",[email],(err,row)=>{
+    db.get("SELECT * FROM admin WHERE id = ?",[id],(err,row)=>{
       if(err){
         reject(err.message)
         db.close()
@@ -98,7 +98,6 @@ function createAdmin(name, email, phone, password, joining_date) {
 function adminLogin(email, password) {
   return new Promise((resolve, reject) => {
     const db = cdb();
-
     db.serialize(() => {
       db.get(
         'SELECT * FROM admin WHERE email = ?',
@@ -112,7 +111,9 @@ function adminLogin(email, password) {
             reject('Invalid email');
           } else {
             comparePassword(password, row.password)
-              .then(() => {
+              .then((ps) => {
+               if(ps){
+                console.log(ps);
                 const tokenData = {
                   id:row.id,
                   name: row.name,
@@ -133,6 +134,10 @@ function adminLogin(email, password) {
                     }
                   }
                 );
+               }else{
+                db.close()
+                reject("Password Not matched")
+               }
               })
               .catch((err) => {
                 db.close();
@@ -145,24 +150,4 @@ function adminLogin(email, password) {
   });
 }
 
-
-// createAdmin(
-//     "sundeep sharma",
-//     "gsf@bgf.mn",
-//     "1234567890",
-//     "sikkim",
-//     new Date()
-// ).then(dt=>console.log(dt))
-
 export { createAdmin, adminLogin, getuser,updateUser };
-
-// db.run(`
-//     CREATE TABLE IF NOT EXISTS admin (
-//       id INTEGER PRIMARY KEY,
-//       name TEXT,
-//       email TEXT,
-//       phone TEXT,
-//       password TEXT,
-//       joining_date,joining_date
-//     )
-//   `);

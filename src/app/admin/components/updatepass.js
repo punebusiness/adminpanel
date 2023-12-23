@@ -25,20 +25,26 @@ export function UpdatePassword(){
                 }
             }).then(resp=>resp.json())
             .then(data=>{
+               if(data.error){
+                toast.error(data.message)
+               }else{
                 toast.success("Password changed succesfully!")
-        sbtn.current.disabled = false;
-        uform.current.reset();
+                sbtn.current.disabled = false;
+                uform.current.reset();
+               }
+                sbtn.current.disabled = false;
+
             })
             .catch(err=>{
                 toast.error(err.message??"Oops! something went wrong.")
-        sbtn.current.disabled = false;
-
+                 sbtn.current.disabled = false;
             })
         }else{
             toast.error("Password must match!")
         sbtn.current.disabled = false;
 
         }
+
     }
     return (
         <>
@@ -59,7 +65,7 @@ export function UpdatePassword(){
                 <button className="btn btn-primary rounded-pill" type="submit" ref={sbtn}>Update Password</button>
             </form>
         </div>
-        <ToastContainer position="bottom-right" autoClose={3000} />
+        <ToastContainer/>
         </>
     )
 }
