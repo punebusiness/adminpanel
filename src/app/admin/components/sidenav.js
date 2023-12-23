@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserProfilePage from "./profile"
 import InstituteTabs from "./institute/tabs"
+import BatchSideNav from "../../forall/tabnav"
 import {
   faUser,
   faGraduationCap,
@@ -28,7 +29,7 @@ const SideNavigation = () => {
     { name: 'Student Section', icon: faGraduationCap ,content:"student page"},
     { name: 'Fees Collection', icon: faMoneyBill ,content:"fees collection"},
     { name: 'Student Results', icon: faPoll ,content:"student result"},
-    { name: 'Course Section', icon: faBookOpen,content:"course section" },
+    { name: 'Course Section', icon: faBookOpen,content:<BatchSideNav/> },
     { name: 'Notifications', icon: faBell,content:"notification" },
     { name: 'Complaints', icon: faExclamationCircle ,content:"complaints"},
     { name: 'Log Out', icon: faSignOutAlt,link:"/"},
