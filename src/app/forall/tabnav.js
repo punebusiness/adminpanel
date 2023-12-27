@@ -7,7 +7,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import AddBatch from "./addbatch"
-
+import BatchTable from "./showbatch"
+import UpdateBatch from "./updatebatch"
 const BatchSideNav = () => {
   const [activeTab, setActiveTab] = useState('newBatch');
 
@@ -20,9 +21,9 @@ const BatchSideNav = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'viewBatch':
-        return <div>View Batch Content</div>;
+        return <div><BatchTable/></div>;
       case 'updateBatch':
-        return <div>Update Batch Content</div>;
+        return <div><UpdateBatch/></div>;
       case 'newBatch':
       default:
         return <div><AddBatch/></div>;

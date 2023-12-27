@@ -26,3 +26,30 @@ input{
 .btn-primary{
   background-color: blueviolet;
 }
+
+#showbatch td,#showbatch th{
+  border:2px solid white;
+  text-align:center;
+  text-wrap: nowrap;
+}
+/* For Firefox */
+/* Note: As of my knowledge cutoff in 2022, Firefox supports the scrollbar-width property, but it doesn't support scrollbar-color yet. */
+/* You can customize the color using browser-specific styling or use a custom scrollbar library for Firefox. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f1f1f1; /* thumb color and track color */
+}
+
+/* For Webkit browsers (Chrome, Safari, etc.) */
+/* Note: Webkit browsers support both scrollbar-width and scrollbar-color properties. */
+*::-webkit-scrollbar {
+  width: 8px; /* Adjust the width as needed */
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #ccc; /* Scrollbar thumb color */
+  border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+*::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Scrollbar track color */
+}
