@@ -1,92 +1,89 @@
 import cdb from "../../conn";
 import {comparePassword,hashPassword} from "../../secure"
-export default function showAdmins(id) {
+export function showAdmins(id) {
   return new Promise((resolve, reject) => {
     let db = cdb();
+    db.query('SHOW COLUMNS FROM admin', (err, columnsInfo) => {
+      if (err) {
+        reject(err.message);
+        db.end();
+        return;
+      }
 
-    db.serialize(() => {
-      db.all(
-        "PRAGMA table_info(admin)",
-        (err, columnsInfo) => {
-          if (err) {
-            reject(err.message);
-            db.close();
-            return;
-          }
+      const columnNames = columnsInfo
+        .filter((column) => column.Field !== 'password')
+        .map((column) => column.Field);
 
-          const columnNames = columnsInfo
-            .filter((column) => column.name !== "password")
-            .map((column) => column.name);
+      const selectColumns = columnNames.join(', ');
+      const query = `SELECT ${selectColumns} FROM admin WHERE id != ${id}`;
 
-          const selectColumns = columnNames.join(", ");
-          const query = `SELECT ${selectColumns} FROM admin WHERE id !=${id}`;
-
-          db.all(query, (err, rows) => {
-            if (err) {
-              reject(err.message);
-            } else {
-              resolve(rows);
-            }
-            db.close();
-          });
+      db.query(query, (err, rows) => {
+        if (err) {
+          reject(err.message);
+        } else {
+          resolve(rows);
         }
-      );
+        db.end();
+      });
     });
   });
 }
 
-export async function deleteAdmin(id){
-  return new Promise((resolve,reject)=>{
-    let db = cdb()
-    db.serialize(()=>{
-      let query = `DELETE FROM admin WHERE id = ${id}`;
-      db.run(query,(err)=>{
-        if(err){
-          reject(err.message)
-        }else{
-          resolve("Admin Deleted Succesfully!")
-        }
-        db.close()
-      })
-    })
-  })
+export function deleteAdmin(id) {
+  return new Promise((resolve, reject) => {
+    let db = cdb();
+
+    let query = `DELETE FROM admin WHERE id = ${id}`;
+    db.query(query, (err, result) => {
+      if (err) {
+        reject(err.message);
+      } else {
+        resolve(`Admin Deleted Successfully! Affected rows: ${result.affectedRows}`);
+      }
+      db.end();
+    });
+  });
 }
 
 export function changePassword(prevPass, newPass, id) {
   return new Promise((resolve, reject) => {
     let db = cdb();
-    db.serialize(() => {
-      const checkPasswordQuery = `SELECT * FROM admin WHERE id = ?`;
-      db.get(checkPasswordQuery, [id], (err, row) => {
-        if (err) {
-          reject(err.message);
-          db.close()
-        } else if (!row) {
-          reject("User not Found");
-          db.close()
-        } else {
-          comparePassword(prevPass,row.password).then(x=>{
-              hashPassword(newPass).then(hash=>{
-              let query = `UPDATE admin SET password = '${hash}' WHERE id=${id}`;
-                db.run(query,(err)=>{
-                  if(err){
-                    reject("Something went wrong!:73")
-                  }else{
-                    resolve("Password Changed Succesfully!")
-                  }
-                  db.close()
+
+    const checkPasswordQuery = `SELECT * FROM admin WHERE id = ?`;
+    db.query(checkPasswordQuery, [id], (err, rows) => {
+      if (err) {
+        reject(err.message);
+      } else if (rows.length === 0) {
+        reject("User not Found");
+      } else {
+        const row = rows[0];
+        comparePassword(prevPass, row.password)
+          .then((isMatch) => {
+            if (!isMatch) {
+              reject("Invalid previous password");
+            } else {
+              hashPassword(newPass)
+                .then((hash) => {
+                  let updateQuery = `UPDATE admin SET password = ? WHERE id = ?`;
+                  db.query(updateQuery, [hash, id], (err) => {
+                    if (err) {
+                      reject("Something went wrong!");
+                    } else {
+                      resolve("Password Changed Successfully!");
+                    }
+                    db.end();
+                  });
                 })
-              }).catch(err=>{
-                reject(err.message)
-                db.close()
-              })
-          }).catch(err=>{
-            db.close()
-            reject(err.message)
+                .catch((err) => {
+                  reject(err.message);
+                  db.end();
+                });
+            }
           })
-          
-        }
-      });
+          .catch((err) => {
+            reject(err.message);
+          });
+      }
     });
   });
 }

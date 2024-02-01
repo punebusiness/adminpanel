@@ -1,11 +1,10 @@
 import cdb from "../../conn";
-
-export function addbatch(obj) {
+export function addBatch(obj) {
     return new Promise((resolve, reject) => {
-        let db = cdb();
-        let createquery = `
+        const db = cdb();
+        const createQuery = `
             CREATE TABLE IF NOT EXISTS course (
-                id INTEGER PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 instituteName TEXT,
                 batchSize TEXT,
                 batchType TEXT,
@@ -19,18 +18,19 @@ export function addbatch(obj) {
                 createdOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `;
-        db.run(createquery, (err) => {
+        
+        db.query(createQuery, (err) => {
             if (err) {
                 reject(err);
-                db.close();
+                db.end();
             } else {
-                let addquery = `
+                const addQuery = `
                     INSERT INTO course 
                         (instituteName, batchSize, batchType, courseName, courseDuration, batchStart, batchEnd, batchNumber, batchFees, addedBy) 
                     VALUES 
                         (?, ?, ?,?, ?, ?, ?, ?, ?, ?)
                 `;
-                let values = [
+                const values = [
                     obj.instituteName,
                     obj.batchSize,
                     obj.batchType,
@@ -43,96 +43,100 @@ export function addbatch(obj) {
                     obj.addedBy
                 ];
 
-                db.run(addquery, values, (err) => {
+                db.query(addQuery, values, (err) => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve("Batch added successfully");
                     }
-                    db.close();
+                    db.end();
                 });
             }
         });
     });
 }
 
-
-export function getallbatches() {
+export function getAllBatches() {
     return new Promise((resolve, reject) => {
-        let db = cdb();
-        let getquery = `
+        const db = cdb();
+        const getQuery = `
             SELECT * FROM course
         `;
 
-        db.all(getquery, (err, rows) => {
+        db.query(getQuery, (err, rows) => {
             if (err) {
                 reject(err);
             } else {
                 resolve(rows);
             }
-            db.close();
+            db.end();
         });
     });
 }
-export function deletebatch(id) {
+
+export function deleteBatch(id) {
     return new Promise((resolve, reject) => {
-        let db = cdb();
-        let getquery = `
-            DELETE FROM course WHERE id ='${id}'
+        const db = cdb();
+        const deleteQuery = `
+            DELETE FROM course WHERE id = ?
         `;
 
-        db.run(getquery, (err) => {
+        db.query(deleteQuery, [id], (err, result) => {
             if (err) {
                 reject(err);
             } else {
-                resolve("Data Deleted Succesfully!");
+                if (result.affectedRows > 0) {
+                    resolve("Data Deleted Successfully!");
+                } else {
+                    reject(`No matching batch found with ID ${id}`);
+                }
             }
-            db.close();
+            db.end();
         });
     });
 }
 
-export function updatebatch(updatedObj) {
+export function updateBatch(updatedObj) {
     return new Promise((resolve, reject) => {
-      let db = cdb();
-  
-      let updateQuery = `
-          UPDATE course 
-          SET 
-              instituteName = ?,
-              batchSize = ?,
-              batchType = ?,
-              courseName = ?,
-              courseDuration = ?,
-              batchStart = ?,
-              batchEnd = ?,
-              batchNumber = ?,
-              batchFees = ?
-          WHERE id = ?
-      `;
-  
-      let values = [
-        updatedObj.instituteName,
-        updatedObj.batchSize,
-        updatedObj.batchType,
-        updatedObj.courseName,
-        updatedObj.courseDuration,
-        updatedObj.batchStart,
-        updatedObj.batchEnd,
-        updatedObj.batchNumber,
-        updatedObj.batchFees,
-        updatedObj.id, // Assuming id is present in the updatedObj
-      ];
-  
-      db.run(updateQuery, values, (err) => {
-        if (err) {
-          reject(err);
-          db.close();
-        } else {
-          resolve("Batch updated successfully");
-          db.close();
-        }
-      });
+        const db = cdb();
+        const updateQuery = `
+            UPDATE course 
+            SET 
+                instituteName = ?,
+                batchSize = ?,
+                batchType = ?,
+                courseName = ?,
+                courseDuration = ?,
+                batchStart = ?,
+                batchEnd = ?,
+                batchNumber = ?,
+                batchFees = ?
+            WHERE id = ?
+        `;
+        const values = [
+            updatedObj.instituteName,
+            updatedObj.batchSize,
+            updatedObj.batchType,
+            updatedObj.courseName,
+            updatedObj.courseDuration,
+            updatedObj.batchStart,
+            updatedObj.batchEnd,
+            updatedObj.batchNumber,
+            updatedObj.batchFees,
+            updatedObj.id
+        ];
+
+        db.query(updateQuery, values, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                if (result.affectedRows > 0) {
+                    resolve("Batch updated successfully");
+                } else {
+                    reject(`No matching batch found with ID ${updatedObj.id}`);
+                }
+            }
+            db.end();
+        });
     });
-  }
-  
+}

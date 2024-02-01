@@ -104,23 +104,23 @@ export default function UpdateIn(){
             <form onSubmit={handleSubmit}>
                 <div className="mb-2">
                 <label htmlFor="">Name</label>
-                <input type="text" value={institute.name} className="form-control" onChange={(e)=>{handleInputChange(e,"name")}} />
+                <input type="text" value={institute?.name} className="form-control" onChange={(e)=>{handleInputChange(e,"name")}} />
                 </div>
                 <div className="mb-2">
                 <label htmlFor="">Email</label>
-                <input type="email" value={institute.email} className="form-control" onChange={(e)=>{handleInputChange(e,"email")}} />
+                <input type="email" value={institute?.email} className="form-control" onChange={(e)=>{handleInputChange(e,"email")}} />
                 </div>
                 <div className="mb-2">
                 <label htmlFor="">Phone</label>
-                <input type="tel" value={institute.phone} className="form-control" onChange={(e)=>{handleInputChange(e,"phone")}}/>
+                <input type="tel" value={institute?.phone} className="form-control" onChange={(e)=>{handleInputChange(e,"phone")}}/>
                 </div>
                 <div className="mb-2">
                 <label htmlFor="">Address</label>
-                <input type="text" value={institute.address} className="form-control" onChange={(e)=>{handleInputChange(e,"address")}} />
+                <input type="text" value={institute?.address} className="form-control" onChange={(e)=>{handleInputChange(e,"address")}} />
                 </div>
                 <div className="mb-2">
                 <label htmlFor="">TC Number</label>
-                <input type="number" value={institute.tcnumber} className="form-control" onChange={(e)=>{handleInputChange(e,"tcnumber")}}/>
+                <input type="number" value={institute?.tcnumber} className="form-control" onChange={(e)=>{handleInputChange(e,"tcnumber")}}/>
                 </div>
                 <div className="mb-2">
                 <label htmlFor="">Logo</label>

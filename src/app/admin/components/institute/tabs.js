@@ -22,7 +22,9 @@ const InstituteTabs = () => {
       try {
         const response = await fetch(apiUrl);
         const data = await response.json();
-        setInstitutes(data.data);
+        if(!data.error){
+          setInstitutes(data.data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }

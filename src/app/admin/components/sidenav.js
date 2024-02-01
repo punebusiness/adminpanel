@@ -1,9 +1,11 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState ,useContext} from 'react';
+import {pathy} from "../../context"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserProfilePage from "./profile"
 import InstituteTabs from "./institute/tabs"
 import BatchSideNav from "../../forall/tabnav"
+import StudentNav from "../../student/components/action"
 import {
   faUser,
   faGraduationCap,
@@ -20,13 +22,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 const SideNavigation = () => {
+  const {path} = useContext(pathy)
+  // console.log(here);
+  const there = path.split('/')[1]
   const [isMenuExpanded, setMenuExpanded] = useState(false);
-  const [Content,setContent] = useState(<UserProfilePage/>)
+  const [Content,setContent] = useState(there=='admin'?<UserProfilePage/>:there=='institute'?'institute profile':'')
 
   const menuItems = [
-    { name: 'My Profile', icon: faUser ,content:<UserProfilePage/>},
-    { name: 'Institute Section', icon: faUniversity ,content:<InstituteTabs/>},
-    { name: 'Student Section', icon: faGraduationCap ,content:"student page"},
+    { name: 'My Profile', icon: faUser ,content:there=='admin'?<UserProfilePage/>:there=='institute'?'institute profile':''},
+    { name: 'Institute Section', icon: faUniversity ,content:there=='admin'?<InstituteTabs/>:'for institutes'},
+    { name: 'Student Section', icon: faGraduationCap ,content:<StudentNav/>},
     { name: 'Fees Collection', icon: faMoneyBill ,content:"fees collection"},
     { name: 'Student Results', icon: faPoll ,content:"student result"},
     { name: 'Course Section', icon: faBookOpen,content:<BatchSideNav/> },

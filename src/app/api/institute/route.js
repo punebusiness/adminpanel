@@ -11,6 +11,7 @@ export async function PUT(req){
         let add = await addInstitute(data)
         return NextResponse.json({success:true,message:add},{status:200})
     }catch(err){
+        console.log(err);
         return NextResponse.json({error:true,message:err.message},{status:501})
     }
 }

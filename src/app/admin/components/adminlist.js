@@ -7,9 +7,10 @@ const AdminList = () => {
   const [admins, setAdmins] = useState([]);
 useEffect(()=>{
     fetch("/api/admin/crud").then(res=>res.json()).then(data=>{
+      console.log(data);
         setAdmins(data.data)
     })
-},[admins])
+},[])
   const deleteAdmin = (adminId) => {
     fetch("/api/admin/crud",{
       method:"DELETE",

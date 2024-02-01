@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server"
-import showAdmins from "../../models/admin/showadmins"
+import {showAdmins} from "../../models/admin/showadmins"
 import {deleteAdmin} from "../../models/admin/showadmins"
 import {changePassword} from "../../models/admin/showadmins"
 import {verify} from "jsonwebtoken"
@@ -8,6 +8,7 @@ export async function GET(req){
         let tkn = await req.cookies.get("jwt")
         let vfy = verify(tkn.value,process.env.SECRET)
         let data = await showAdmins(vfy.id);
+        console.log(data);
         return NextResponse.json({data},{status:200});
     }catch(err){
         return NextResponse.json({error:true,message:err.message},{status:501})

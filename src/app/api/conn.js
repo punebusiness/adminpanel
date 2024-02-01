@@ -1,7 +1,17 @@
-import sqlite3 from 'sqlite3';
-import path from "path"
+import mysql from "mysql"
 export default function cdb(){
-    let pth = path.resolve(process.cwd(),'a.sqlite')
-    let db = new sqlite3.Database(pth);
-    return db;
-  }
+    let con = mysql.createConnection({
+      host:'localhost',
+      user:'root',
+      password:'',
+      database:'pune-panel'
+    })
+    con.connect(err=>{
+      if(err){
+        console.log(err);
+      }
+      console.log("database connected!")
+    })
+
+    return con;
+}
