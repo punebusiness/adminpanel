@@ -1,10 +1,10 @@
 import mysql from "mysql"
 export default function cdb(){
     let con = mysql.createConnection({
-      host:'localhost',
-      user:'root',
-      password:'',
-      database:'pune-panel'
+      host:process.env.HOST,
+      user:process.env.USER,
+      password:process.env.PASS,
+      database:process.env.DBNAME
     })
     con.connect(err=>{
       if(err){
