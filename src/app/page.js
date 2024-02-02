@@ -1,4 +1,3 @@
-"use client"
 import HeroSection from './components/hero'
 import 'animate.css'
 import Load from "./components/loader"
