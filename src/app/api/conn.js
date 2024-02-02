@@ -1,7 +1,8 @@
 import mysql from "mysql";
 
 export default function cdb() {
-    let con = mysql.createConnection({
+    try{
+      let con = mysql.createConnection({
         host: process.env.HOST,
         user: process.env.USER,
         password: process.env.PASS,
@@ -17,4 +18,7 @@ export default function cdb() {
     });
 
     return con;
+    }catch(err){
+console.log("error db connection");
+    }
 }
