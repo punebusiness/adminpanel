@@ -1,7 +1,9 @@
 "use client"
-import {useState,useRef} from "react"
+import {useState,useRef,useContext} from "react"
+import {inList} from "../context"
 import {toast,ToastContainer} from "react-toastify"
 export default function AddBatch(){
+    const {its} = useContext(inList)
     const sbtn = useRef()
     function handleSubmit(e){
         e.preventDefault()
@@ -42,7 +44,13 @@ export default function AddBatch(){
         <div className="rounded bg-slate-700 m-2 p-3 shadow-4">
             <form onSubmit={handleSubmit}>
                 <label htmlFor="">Institute Name :</label>
-                <input type="text" className="form-control mb-2" required/>
+                <select className="form-select mb-2">
+                    {
+                        its.map((ins,i)=>(
+                            <option value={ins} key={i}>{ins}</option>
+                        ))
+                    }
+                </select>
                 <label htmlFor="">Batch Size :</label>
                 <input type="text" className="form-control mb-2" required />
                 <label htmlFor="">Batch Type :</label>

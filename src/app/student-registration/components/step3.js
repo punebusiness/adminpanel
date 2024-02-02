@@ -3,6 +3,7 @@ import Image from "next/image"
 const fileTypes = ["JPG","JPEG", "PNG"];
 import {useContext,useRef} from "react"
 import {dataContext,loadContext,apiContext} from "../context/indicatecontext"
+import {signalContext} from "../../context"
 import {toast} from "react-toastify"
 import {FileUploader} from "react-drag-drop-files"
 import UploadLoad from "./uploadloading"
@@ -11,6 +12,7 @@ const payId = useRef()
 const pwd = useRef()
 const cpwd = useRef()
 const sbtn = useRef()
+const {signal,setSignal} = useContext(signalContext)
 const {data,setData} = useContext(dataContext)
 const {load,setLoad} = useContext(loadContext)
 const {batches,setBatches} = useContext(apiContext)
@@ -84,6 +86,7 @@ const feetopay = batches.data.filter(batch=>{
                     toast.error(dt.message)
                 }else{
                     setData({...data,paymentProff:JSON.stringify({data:dt.data})})
+                    setSignal(Math.random())
                     toast.success(dt.message)
                 }
                 setLoad("")

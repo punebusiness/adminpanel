@@ -1,11 +1,13 @@
 "use client"
 import {useContext,useState} from "react"
-import {idContext,updateContext,studentContext,signalContext,modalContext} from "../../context"
+import {idContext,updateContext,studentContext,signalContext,modalContext,pathy} from "../../context"
 import {toast,ToastContainer} from "react-toastify"
 import UpdateStudent from "./update"
 import Modal from "./modal"
 export default function ShowStudents(){
 const [open, setOpen] = useState(false);
+const {path} = useContext(pathy)
+let there = path.split("/")[1]
     const {childs,setChilds} = useContext(studentContext)
     const {id,setId} = useContext(idContext)
     const {updateId,setUpdateId} = useContext(updateContext)
@@ -63,9 +65,13 @@ const [open, setOpen] = useState(false);
                     <th>Taluka</th>
                     <th>Course Duration</th>
                     <th>Institute</th>
+                   {
+                    there=="institute"?(<>
+                    <th>Action</th></>):(<>
                     <th>Status</th>
                     <th>Action</th>
-                    <th>Action</th>
+                    <th>Action</th></>)
+                   }
                 </tr>
             </thead>
             <tbody>
@@ -86,6 +92,7 @@ const [open, setOpen] = useState(false);
                             <td>{e.taluka}</td>
                             <td>{e.courseDuration}</td>
                             <td>{e.selectInstitute}</td>
+                            {there=="admin"?(<>
                             <td>
                                 {e.approved==1?'Approved':<button className="btn btn-warning" onClick={(ev)=>{
                                     handleApprove(e.id,ev)
@@ -102,6 +109,16 @@ const [open, setOpen] = useState(false);
                                     handleDelete(e.id,ev)
                                 }}>Delete</button>
                             </td>
+                            </>):(
+                                <>
+                                <td>
+                                <button className="btn btn-warning" onClick={()=>{
+                                    setUpdateId(e.id)
+                                    setModal(true)
+                                }}>Edit</button>
+                            </td>
+                                </>
+                            )}
                         </tr>
                     ))
                 }

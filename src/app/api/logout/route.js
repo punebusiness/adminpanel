@@ -1,7 +1,8 @@
 import {NextResponse} from "next/server"
 export async function GET(req){
-    let rurl = new URL("/admin/login",process.env.PROD?new URL(req.url).href.replace(/:\d+/,''):new URL(req.url).href);
-    let resp = NextResponse.redirect(rurl,{status:301})
-    resp.cookies.delete("jwt")
+let rt = req.nextUrl.searchParams.get('user');
+    let rurl = new URL(`/${rt}/login`,process.env.PROD?new URL(req.url).href.replace(/:\d+/,''):new URL(req.url).href);
+    let resp = NextResponse.redirect(rurl,{status:307})
+    resp.cookies.set("jwt","")
     return resp;
 }

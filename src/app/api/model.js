@@ -126,6 +126,7 @@ function adminLogin(email, password) {
         email: row.email,
         joining_date: row.joining_date,
         isadmin: row.isadmin,
+        admin:true
       };
 
       const token = await signTokenAsync(tokenData);
@@ -156,7 +157,7 @@ export function instituteLogin(email, password) {
         return reject('Password Not matched');
       }
 
-      const tokenData = {...row,password:"",logo:''};
+      const tokenData = {...row,password:"",logo:'',institute:true};
 
       const token = await signTokenAsync(tokenData);
 

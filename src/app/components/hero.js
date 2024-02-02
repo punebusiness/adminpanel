@@ -93,8 +93,13 @@ const HeroSection = () => {
             </Link>
           </li>
           <li className="mt-2">
-            <Link href="/student/login" className="text-blue-300 hover:text-blue-400">
-              Student Login
+            <Link href="/student-registration" className="text-blue-300 hover:text-blue-400">
+              Student Registration
+            </Link>
+          </li>
+          <li className="mt-2">
+            <Link href="/student/idcard" className="text-blue-300 hover:text-blue-400">
+              Student ID Card
             </Link>
           </li>
         </ul>

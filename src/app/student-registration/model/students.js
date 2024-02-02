@@ -127,12 +127,18 @@ export function checkEmail(email) {
       });
   });
 }
-export function getStudentsAfterId(startingId) {
+export function getStudentsAfterId(startingId,ins=false) {
   return new Promise((resolve, reject) => {
     let db = cdb();
-    let query = "SELECT * FROM students WHERE id > ? LIMIT 10";
+    let query; 
+    if (ins) {
+      query = "SELECT * FROM students WHERE LOWER(selectInstitute) = LOWER(?) AND id > ? LIMIT 10";
+    } else {
+      query = "SELECT * FROM students WHERE id > ? LIMIT 10";
+    }
     
-    db.query(query, [startingId], (error, results) => {
+    
+    db.query(query, ins?[ins,startingId]:[startingId], (error, results) => {
       if (error) {
         reject(error);
       } else {
