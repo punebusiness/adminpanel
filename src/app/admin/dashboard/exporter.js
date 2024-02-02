@@ -1,3 +1,4 @@
+"use client"
 import {useEffect,useState} from "react"
 import SideNavigation from "../components/sidenav"
 import {studentContext,idContext,signalContext,modalContext,updateContext,pathy,inList} from "../../context"
