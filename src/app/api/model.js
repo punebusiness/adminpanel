@@ -2,8 +2,8 @@ import { comparePassword, hashPassword } from './secure.js';
 import jwt from 'jsonwebtoken';
 import cdb from "./conn"
 function updateUser(name, email, phone, id) {
-  return new Promise((resolve, reject) => {
-    const db = cdb();
+  return new Promise(async(resolve, reject) => {
+    const db = await cdb();
 
     const checkUserQuery = "SELECT * FROM admin WHERE id = ?";
     db.query(checkUserQuery, [id], (err, row) => {
@@ -29,8 +29,8 @@ function updateUser(name, email, phone, id) {
 
 
 function getuser(id) {
-  return new Promise((resolve, reject) => {
-    const db = cdb();
+  return new Promise(async(resolve, reject) => {
+    const db = await cdb();
 
     const query = "SELECT * FROM admin WHERE id = ?";
     
@@ -49,8 +49,8 @@ function getuser(id) {
 }
 
 function createAdmin(name, email, phone, password, joining_date,isadmin=true) {
-  return new Promise((resolve, reject) => {
-    const db = cdb();
+  return new Promise(async(resolve, reject) => {
+    const db = await cdb();
 
     hashPassword(password)
       .then((hash) => {
@@ -103,7 +103,7 @@ function createAdmin(name, email, phone, password, joining_date,isadmin=true) {
 
 function adminLogin(email, password) {
   return new Promise(async (resolve, reject) => {
-    const db = cdb();
+    const db = await cdb();
 
     try {
       const row = await queryAsync(db, 'SELECT * FROM admin WHERE email = ?', [email]);
@@ -141,7 +141,7 @@ function adminLogin(email, password) {
 }
 export function instituteLogin(email, password) {
   return new Promise(async (resolve, reject) => {
-    const db = cdb();
+    const db = await cdb();
     try {
       const row = await queryAsync(db, 'SELECT * FROM institute WHERE email = ?', [email]);
 
