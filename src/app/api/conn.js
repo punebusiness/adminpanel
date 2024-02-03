@@ -3,11 +3,11 @@ import mysql from "mysql";
 export default function cdb() {
     try{
       let con = mysql.createConnection({
-        host: "sql6.freemysqlhosting.net",
-        user: "sql6681601",
-        password: "8LYCtbwrMw",
-        database: "sql6681601",
-        port:'3306'
+        host: process.env.HOST,
+        user: process.env.USER,
+        password: process.env.PASS,
+        database: process.env.DBNAME,
+        port: 3312
     });
 
     con.connect(err => {
