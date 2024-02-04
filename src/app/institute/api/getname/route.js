@@ -1,21 +1,18 @@
 import cdb from "../../../api/conn"
 import {NextResponse} from "next/server"
-export function getAllInstituteNames() {
-    return new Promise((resolve, reject) => {
-        let db = cdb();
-        let query = "SELECT name FROM institute";
+async function getAllInstituteNames() {
+    try {
+        const db = await cdb();
+        const query = "SELECT name FROM institute";
+        const [rows] = await db.query(query);
 
-        db.query(query, (error, results) => {
-            if (error) {
-                reject(error);
-            } else {
-                const instituteNames = results.map(result => result.name);
-                resolve(instituteNames);
-            }
-        });
-    });
+        const instituteNames = rows.map(result => result.name);
+        return instituteNames;
+    } catch (error) {
+        console.error('Error in getAllInstituteNames:', error.message);
+        throw new Error('Error getting all institute names');
+    }
 }
-
 export async function GET(req){
 try{
 let dt = await getAllInstituteNames();

@@ -1,173 +1,180 @@
 import { comparePassword, hashPassword } from './secure.js';
 import jwt from 'jsonwebtoken';
 import cdb from "./conn"
-function updateUser(name, email, phone, id) {
-  return new Promise(async(resolve, reject) => {
-    const db = await cdb();
+async function updateUser(name, email, phone, id) {
+  try {
+      const db = await cdb();
 
-    const checkUserQuery = "SELECT * FROM admin WHERE id = ?";
-    db.query(checkUserQuery, [id], (err, row) => {
-      if (err) {
-        reject(err.message);
-      } else if (!row) {
-        reject("No user found");
-      } else {
-        const updateUserQuery = "UPDATE admin SET name=?, email=?, phone=? WHERE id=?";
-        db.query(updateUserQuery, [name, email, phone, id], (err) => {
-          if (err) {
-            reject(err.message);
-          } else {
-            resolve("Admin updated successfully");
-          }
-        });
+      // Check if the user exists
+      const [rows] = await db.query('SELECT * FROM admin WHERE id = ?', [id]);
+
+      // Check if the result is not empty
+      if (rows.length === 0) {
+          db.end();
+          throw new Error('No user found');
       }
 
-      // The 'mysql' package automatically manages the connection, so there's no need to close it manually
-    });
-  });
-}
+      // Update the user
+      const [updateResult] = await db.query('UPDATE admin SET name=?, email=?, phone=? WHERE id=?', [name, email, phone, id]);
 
-
-function getuser(id) {
-  return new Promise(async(resolve, reject) => {
-    const db = await cdb();
-
-    const query = "SELECT * FROM admin WHERE id = ?";
-    
-    db.query(query, [id], (err, rows) => {
-      if (err) {
-        reject(err.message);
-      } else {
-        // Assuming you only expect one result, use the first row
-        const row = rows[0];
-        resolve(row);
+      // Check if the update was successful
+      if (updateResult.affectedRows === 0) {
+          db.end();
+          throw new Error('Admin not updated');
       }
 
-      // The 'mysql' package automatically manages the connection, so there's no need to close it manually
-    });
-  });
-}
+      // Close the database connection
+      db.end();
 
-function createAdmin(name, email, phone, password, joining_date,isadmin=true) {
-  return new Promise(async(resolve, reject) => {
-    const db = await cdb();
-
-    hashPassword(password)
-      .then((hash) => {
-        const checkDuplicateQuery = 'SELECT COUNT(*) as count FROM admin WHERE email=? OR phone=?';
-        db.query(checkDuplicateQuery, [email, phone], (err, rows) => {
-          if (err) {
-            reject(err.message);
-            db.close();
-          } else {
-            const isDuplicate = rows[0].count > 0;
-            if (isDuplicate) {
-              reject('Email or phone already exist');
-              db.close();
-            } else {
-              const insertQuery = `
-                INSERT INTO admin (name, email, phone, password, joining_date,isadmin)
-                VALUES (?, ?, ?, ?, ?,?)
-              `;
-              db.query(insertQuery, [name, email, phone, hash, joining_date,isadmin], (err) => {
-                if (err) {
-                  reject(err.message);
-                  db.close();
-                } else {
-                  const selectQuery = `
-                    SELECT name, email, phone, joining_date
-                    FROM admin
-                    WHERE email=?
-                  `;
-                  db.query(selectQuery, [email], (err, rows) => {
-                    if (err) {
-                      reject(err.message);
-                    } else {
-                      const result = rows[0];
-                      resolve(result);
-                    }
-                    db.close();
-                  });
-                }
-              });
-            }
-          }
-        });
-      })
-      .catch((err) => {
-        reject(err.message);
-      });
-  });
+      return 'Admin updated successfully';
+  } catch (error) {
+      console.log("Error in updateUser:", error.message);
+      throw error;
+  }
 }
 
 
-function adminLogin(email, password) {
-  return new Promise(async (resolve, reject) => {
-    const db = await cdb();
+async function getuser(id) {
+  try {
+      const db = await cdb();
 
+      // Use async/await to execute the query and handle errors
+      const [rows] = await db.query('SELECT * FROM admin WHERE id = ?', [id]);
+
+      // Check if the result is not empty
+      if (rows.length === 0) {
+          throw new Error('No user found');
+      }
+
+      // Assuming you only expect one result, use the first row
+      const row = rows[0];
+
+      // Close the database connection
+      db.end();
+
+      // Resolve with the user data
+      return row;
+  } catch (error) {
+      console.log("Error in getuser:", error.message);
+      throw error;
+  }
+}
+
+async function createAdmin(name, email, phone, password, joining_date, isadmin = true) {
+  try {
+      const db = await cdb();
+
+      // Hash the password using your hashPassword function
+      const hash = await hashPassword(password);
+
+      // Check for duplicate email or phone
+      const [duplicateRows] = await db.query('SELECT COUNT(*) as count FROM admin WHERE email=? OR phone=?', [email, phone]);
+
+      const isDuplicate = duplicateRows[0].count > 0;
+      if (isDuplicate) {
+          throw new Error('Email or phone already exists');
+      }
+
+      // Insert new admin
+      const [insertResult] = await db.query(`
+          INSERT INTO admin (name, email, phone, password,isadmin)
+          VALUES (?, ?, ?, ?,?)
+      `, [name, email, phone, hash,isadmin]);
+
+      // Retrieve the inserted admin
+      const [selectResult] = await db.query(`
+          SELECT name, email, phone, joining_date
+          FROM admin
+          WHERE email=?
+      `, [email]);
+
+      const result = selectResult[0];
+
+      // Close the database connection
+      db.end();
+
+      return result;
+  } catch (error) {
+      console.log("Error in createAdmin:", error.message);
+      throw error;
+  }
+}
+
+async function adminLogin(email, password) {
     try {
-      const row = await queryAsync(db, 'SELECT * FROM admin WHERE email = ?', [email]);
+        const db = await cdb();
 
-      if (!row) {
+        const [rows] = await db.query('SELECT * FROM admin WHERE email = ?', [email]);
+
+        if (rows.length === 0) {
+            db.end();
+            throw new Error('Invalid email');
+        }
+
+        const row = rows[0];
+
+        const isPasswordMatch = await comparePassword(password, row.password);
+
+        if (!isPasswordMatch) {
+            db.end();
+            throw new Error('Password Not matched');
+        }
+
+        const tokenData = {
+            id: row.id,
+            name: row.name,
+            email: row.email,
+            joining_date: row.joining_date,
+            isadmin: row.isadmin,
+            admin: true,
+        };
+
+        const token = await signTokenAsync(tokenData);
+
         db.end();
-        return reject('Invalid email');
+        return token;
+    } catch (error) {
+        console.log("Error in adminLogin:", error.message);
+        throw error;
+    }
+}
+
+export async function instituteLogin(email, password) {
+  try {
+      const db = await cdb();
+
+      const [rows] = await db.query('SELECT * FROM institute WHERE email = ?', [email]);
+
+      if (rows.length === 0) {
+          db.end();
+          throw new Error('Invalid email');
       }
+
+      const row = rows[0];
 
       const isPasswordMatch = await comparePassword(password, row.password);
 
       if (!isPasswordMatch) {
-        db.end();
-        return reject('Password Not matched');
+          db.end();
+          throw new Error('Password Not matched');
       }
 
       const tokenData = {
-        id: row.id,
-        name: row.name,
-        email: row.email,
-        joining_date: row.joining_date,
-        isadmin: row.isadmin,
-        admin:true
+          // Assuming you want to include other fields excluding 'password' and 'logo'
+          // Modify as per your requirements
+          id: row.id,
+          email: row.email,
+          institute: true,
       };
 
       const token = await signTokenAsync(tokenData);
 
       db.end();
-      resolve(token);
-    } catch (error) {
-      db.end();
-      reject(error.message);
-    }
-  });
-}
-export function instituteLogin(email, password) {
-  return new Promise(async (resolve, reject) => {
-    const db = await cdb();
-    try {
-      const row = await queryAsync(db, 'SELECT * FROM institute WHERE email = ?', [email]);
-
-      if (!row) {
-        db.end();
-        return reject('Invalid email');
-      }
-
-      const isPasswordMatch = await comparePassword(password, row.password);
-
-      if (!isPasswordMatch) {
-        db.end();
-        return reject('Password Not matched');
-      }
-
-      const tokenData = {...row,password:"",logo:'',institute:true};
-
-      const token = await signTokenAsync(tokenData);
-
-      db.end();
-      resolve(token);
-    } catch (error) {
-      db.end();
-      reject(error.message);
-    }
-  });
+      return token;
+  } catch (error) {
+      console.log("Error in instituteLogin:", error.message);
+      throw error;
+  }
 }
 
 function queryAsync(db, query, params) {

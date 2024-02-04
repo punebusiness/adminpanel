@@ -1,113 +1,114 @@
 import cdb from "../../conn";
 import {hashPassword} from "../../secure"
-export function showInstitute() {
-  return new Promise((resolve, reject) => {
-    const db = cdb();
+export async function showInstitute() {
+  try {
+      const db = await cdb();
 
-    // Fetch table columns
-    const tableName = 'institute';
-    const columnsQuery = `SHOW COLUMNS FROM ${tableName}`;
-    
-    db.query(columnsQuery, (err, columns) => {
-      if (err) {
-        reject(err.message);
-        db.end();
-        return;
-      }
+      // Fetch table columns
+      const tableName = 'institute';
+      const columnsQuery = `SHOW COLUMNS FROM ${tableName}`;
+
+      const [columns] = await db.query(columnsQuery);
 
       const columnNames = columns
-        .filter(column => column.Field !== 'password')
-        .map(column => column.Field);
+          .filter(column => column.Field !== 'password')
+          .map(column => column.Field);
 
       const selectColumns = columnNames.join(', ');
       const query = `SELECT ${selectColumns} FROM ${tableName}`;
 
       // Fetch data from the table
-      db.query(query, [], (err, rows) => {
-        if (err) {
-          reject(err.message);
-        } else {
-          resolve(rows);
-        }
-        db.end();
-      });
-    });
-  });
+      const [rows] = await db.query(query);
+
+      // Close the database connection
+      db.end();
+
+      return rows;
+  } catch (error) {
+      console.log("Error in showInstitute:", error.message);
+      throw error;
+  }
 }
-export function deleteInstitute(id) {
-  return new Promise((resolve, reject) => {
-    const db = cdb();
+export async function deleteInstitute(id) {
+    try {
+        const db = await cdb();
 
-    // Construct delete query
-    const deleteQuery = `DELETE FROM institute WHERE id = ?`;
+        // Construct delete query
+        const deleteQuery = 'DELETE FROM institute WHERE id = ?';
 
-    // Execute the delete query
-    db.query(deleteQuery, [id], (err, result) => {
-      if (err) {
-        reject(err.message);
+        // Execute the delete query
+        const [result] = await db.query(deleteQuery, [id]);
+
+        // Close the database connection
         db.end();
-      } else {
+
+        // Check the affected rows and resolve/reject accordingly
         if (result.affectedRows > 0) {
-          resolve(`Institute with ID ${id} deleted successfully`);
+            return `Institute with ID ${id} deleted successfully`;
         } else {
-          reject(`No matching institute found with ID ${id}`);
+            throw new Error(`No matching institute found with ID ${id}`);
         }
-        db.end();
-      }
-    });
-  });
+    } catch (error) {
+        console.log("Error in deleteInstitute:", error.message);
+        throw error;
+    }
 }
-export function updateInstitute(obj) {
-  return new Promise((resolve, reject) => {
-    const db = cdb();
+export async function updateInstitute(obj) {
+  try {
+      const db = await cdb();
 
-    // Construct the update query
-    const query = `UPDATE institute SET name=?, email=?, phone=?, address=?, tcnumber=?, logo=? WHERE id=?`;
+      // Construct the update query
+      const query = 'UPDATE institute SET name=?, email=?, phone=?, address=?, tcnumber=?, logo=? WHERE id=?';
 
-    // Execute the update query with parameters
-    db.query(
-      query,
-      [obj.name, obj.email, obj.phone, obj.address, obj.tcnumber, obj.logo, obj.id],
-      (err, result) => {
-        if (err) {
-          reject(err.message);
-        } else {
-          if (result.affectedRows > 0) {
-            resolve('Institute updated successfully!');
-          } else {
-            reject(`No matching institute found with ID ${obj.id}`);
-          }
-        }
-        db.end();
+      // Execute the update query with parameters
+      const [result] = await db.query(query, [
+          obj.name,
+          obj.email,
+          obj.phone,
+          obj.address,
+          obj.tcnumber,
+          obj.logo,
+          obj.id
+      ]);
+
+      // Close the database connection
+      db.end();
+
+      // Check the affected rows and resolve/reject accordingly
+      if (result.affectedRows > 0) {
+          return 'Institute updated successfully!';
+      } else {
+          throw new Error(`No matching institute found with ID ${obj.id}`);
       }
-    );
-  });
+  } catch (error) {
+      console.log("Error in updateInstitute:", error.message);
+      throw error;
+  }
 }
-export function updatePassword(id, pass) {
-  return new Promise((resolve, reject) => {
-    hashPassword(pass)
-      .then((hash) => {
-        const db = cdb();
+export async function updatePassword(id, pass) {
+  try {
+      const db = await cdb();
 
-        // Construct the update query
-        const query = `UPDATE institute SET password=? WHERE id=?`;
+      // Hash the new password
+      const hash = await hashPassword(pass);
 
-        // Execute the update query with parameters
-        db.query(query, [hash, id], (err, result) => {
-          if (err) {
-            reject(err.message);
-          } else {
-            if (result.affectedRows > 0) {
-              resolve('Password updated successfully!');
-            } else {
-              reject(`No matching institute found with ID ${id}`);
-            }
-          }
-          db.end();
-        });
-      })
-      .catch((err) => {
-        reject(err.message);
-      });
-  });
+      // Construct the update query
+      const query = 'UPDATE institute SET password=? WHERE id=?';
+
+      // Execute the update query with parameters
+      const [result] = await db.query(query, [hash, id]);
+
+      // Close the database connection
+      db.end();
+
+      // Check the affected rows and resolve/reject accordingly
+      if (result.affectedRows > 0) {
+          return 'Password updated successfully!';
+      } else {
+          throw new Error(`No matching institute found with ID ${id}`);
+      }
+  } catch (error) {
+      console.log("Error in updatePassword:", error.message);
+      throw error;
+  }
 }

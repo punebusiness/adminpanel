@@ -1,7 +1,9 @@
 import cdb from "../../conn";
-export function addBatch(obj) {
-    return new Promise((resolve, reject) => {
-        const db = cdb();
+export async function addBatch(obj) {
+    try {
+        const db = await cdb();
+
+        // Create the course table if not exists
         const createQuery = `
             CREATE TABLE IF NOT EXISTS course (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -18,87 +20,89 @@ export function addBatch(obj) {
                 createdOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `;
-        
-        db.query(createQuery, (err) => {
-            if (err) {
-                reject(err);
-                db.end();
-            } else {
-                const addQuery = `
-                    INSERT INTO course 
-                        (instituteName, batchSize, batchType, courseName, courseDuration, batchStart, batchEnd, batchNumber, batchFees, addedBy) 
-                    VALUES 
-                        (?, ?, ?,?, ?, ?, ?, ?, ?, ?)
-                `;
-                const values = [
-                    obj.instituteName,
-                    obj.batchSize,
-                    obj.batchType,
-                    obj.courseName,
-                    obj.courseDuration,
-                    obj.batchStart,
-                    obj.batchEnd,
-                    obj.batchNumber,
-                    obj.batchFees,
-                    obj.addedBy
-                ];
 
-                db.query(addQuery, values, (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve("Batch added successfully");
-                    }
-                    db.end();
-                });
-            }
-        });
-    });
-}
+        await db.query(createQuery);
 
-export function getAllBatches() {
-    return new Promise((resolve, reject) => {
-        const db = cdb();
-        const getQuery = `
-            SELECT * FROM course
+        // Insert data into the course table
+        const addQuery = `
+            INSERT INTO course 
+                (instituteName, batchSize, batchType, courseName, courseDuration, batchStart, batchEnd, batchNumber, batchFees, addedBy) 
+            VALUES 
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
+        const values = [
+            obj.instituteName,
+            obj.batchSize,
+            obj.batchType,
+            obj.courseName,
+            obj.courseDuration,
+            obj.batchStart,
+            obj.batchEnd,
+            obj.batchNumber,
+            obj.batchFees,
+            obj.addedBy
+        ];
 
-        db.query(getQuery, (err, rows) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(rows);
-            }
-            db.end();
-        });
-    });
+        await db.query(addQuery, values);
+
+        // Close the database connection
+        db.end();
+
+        return "Batch added successfully";
+    } catch (error) {
+        console.log("Error in addBatch:", error.message);
+        throw error;
+    }
 }
 
-export function deleteBatch(id) {
-    return new Promise((resolve, reject) => {
-        const db = cdb();
-        const deleteQuery = `
-            DELETE FROM course WHERE id = ?
-        `;
+export async function getAllBatches() {
+    try {
+        const db = await cdb();
 
-        db.query(deleteQuery, [id], (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                if (result.affectedRows > 0) {
-                    resolve("Data Deleted Successfully!");
-                } else {
-                    reject(`No matching batch found with ID ${id}`);
-                }
-            }
-            db.end();
-        });
-    });
+        // Select all batches from the course table
+        const getQuery = 'SELECT * FROM course';
+        const [rows] = await db.query(getQuery);
+
+        // Close the database connection
+        db.end();
+
+        return rows;
+    } catch (error) {
+        console.log("Error in getAllBatches:", error.message);
+        throw error;
+    }
 }
 
-export function updateBatch(updatedObj) {
-    return new Promise((resolve, reject) => {
-        const db = cdb();
+export async function deleteBatch(id) {
+    try {
+        const db = await cdb();
+
+        // Construct delete query
+        const deleteQuery = 'DELETE FROM course WHERE id = ?';
+
+        // Execute the delete query with parameters
+        const [result] = await db.query(deleteQuery, [id]);
+
+        // Close the database connection
+        db.end();
+
+        // Check the affected rows and resolve/reject accordingly
+        if (result.affectedRows > 0) {
+            return "Data Deleted Successfully!";
+        } else {
+            throw new Error(`No matching batch found with ID ${id}`);
+        }
+    } catch (error) {
+        console.log("Error in deleteBatch:", error.message);
+        throw error;
+    }
+}
+
+export async function updateBatch(updatedObj) {
+    try {
+        const db = await cdb();
+
+        // Construct the update query
         const updateQuery = `
             UPDATE course 
             SET 
@@ -113,6 +117,8 @@ export function updateBatch(updatedObj) {
                 batchFees = ?
             WHERE id = ?
         `;
+
+        // Define the parameter values
         const values = [
             updatedObj.instituteName,
             updatedObj.batchSize,
@@ -126,17 +132,20 @@ export function updateBatch(updatedObj) {
             updatedObj.id
         ];
 
-        db.query(updateQuery, values, (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                if (result.affectedRows > 0) {
-                    resolve("Batch updated successfully");
-                } else {
-                    reject(`No matching batch found with ID ${updatedObj.id}`);
-                }
-            }
-            db.end();
-        });
-    });
+        // Execute the update query with parameters
+        const [result] = await db.query(updateQuery, values);
+
+        // Close the database connection
+        db.end();
+
+        // Check the affected rows and resolve/reject accordingly
+        if (result.affectedRows > 0) {
+            return "Batch updated successfully";
+        } else {
+            throw new Error(`No matching batch found with ID ${updatedObj.id}`);
+        }
+    } catch (error) {
+        console.log("Error in updateBatch:", error.message);
+        throw error;
+    }
 }

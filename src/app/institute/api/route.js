@@ -2,19 +2,21 @@ import {sign,verify} from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import {NextResponse} from "next/server"
 import cdb from "../../api/conn"
-function getInsQ(id){
-return new Promise((resolve,reject)=>{
-    let db = cdb()
-    let query = "SELECT * FROM institute WHERE id=?;";
-    db.query(query,[id],(err,row)=>{
-        // console.log(err,row);
-        if(err){
-            reject(err)
-        }else{
-            resolve(row.map(r=>({...r}))[0])     
+async function getInsQ(id) {
+    try {
+        const db = await cdb();
+        const query = "SELECT * FROM institute WHERE id = ?";
+        const [rows] = await db.query(query, [id]);
+
+        if (rows.length === 0) {
+            throw new Error('No institute found with the provided ID');
         }
-    })
-})
+
+        return {...rows[0]}; // Assuming you only expect one result
+    } catch (error) {
+        console.error('Error in getInsQ:', error.message);
+        throw new Error('Error getting institute by ID');
+    }
 }
 
 export async function GET(req){
