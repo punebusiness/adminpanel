@@ -3,11 +3,11 @@ import mysql from "mysql2/promise";
 export default async function cdb() {
     try {
         const con = await mysql.createConnection({
-            host: "103.143.46.252",
-            user: "jnps23_ndb",
-            password: "}cB~+5mKV@vviHF",
-            database: "jnps23_admin",
-            port:2082,
+            host: "monorail.proxy.rlwy.net",
+            user: "root",
+            password: "FhEc2h5A4Ce-cbc5ag15dG44behDfF-b",
+            database: "railway",
+            port: 55609,
         });
 
         console.log("Database connected!");
